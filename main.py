@@ -6,7 +6,7 @@ from copy import copy
 import os
 
 def approx_cond(A, s, indices):
-	sample_indices = np.sort(np.random.choice(indices, s, replace=False))
+	sample_indices = np.sort(np.random.choice(indices, s, replace=True))
 	AS = len(indices) * A[sample_indices][:, sample_indices] / s
 	cond_num = cond(AS)
 	return cond_num
