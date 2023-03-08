@@ -24,10 +24,16 @@ def multiple_trials(A, max_size, steps, trials=50):
 		vals[i,:] = np.array(interim_vec)
 	return vals
 
-def stat_computer(A, p1=20, p2=80):
+def stat_computer(A, do_std=False, p1=20, p2=80):
 	means = np.mean(A, axis=1)
-	percentile1 = np.percentile(A, p1, axis=1)
-	percentile2 = np.percentile(A, p2, axis=1)
+	if do_std:
+		stds = np.std(A, axis=1)
+		percentile1 = means - stds
+		percentile2 = means + stds
+	else:
+		percentile1 = np.percentile(A, p1, axis=1)
+		percentile2 = np.percentile(A, p2, axis=1)
+
 	return np.log(means), np.log(percentile1), np.log(percentile2)
 
 def plot(vals, labels, x_axis, dataset_name):
@@ -71,8 +77,10 @@ labels = ["log sampling rate", "log of errors", "Approximate condition number"]
 approx_PSD_conds = multiple_trials(PSD, max_size, steps, trials)
 approx_sym_conds = multiple_trials(symmetric, max_size, steps, trials)
 
-stats_PSD = stat_computer(approx_PSD_conds - PSD_cond_num, percentiles[0], percentiles[1])
-stats_sym = stat_computer(approx_sym_conds - symmetric_cond_num, percentiles[0], percentiles[1])
+error_PSD = approx_PSD_conds - PSD_cond_num
+error_sym = approx_sym_conds - symmetric_cond_num
+stats_PSD = stat_computer(error_PSD, True, percentiles[0], percentiles[1])
+stats_sym = stat_computer(error_sym, True, percentiles[0], percentiles[1])
 
 x_axis = np.log(list(range(10, max_size, steps)))
 
