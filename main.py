@@ -39,6 +39,7 @@ def plot(vals, labels, x_axis, dataset_name):
 	plt.gcf().clear()
 	plt.plot(x_axis, vals[0], alpha=1.0)
 	plt.fill_between(x_axis, vals[1], vals[2], alpha=0.2)
+	plt.ylim((-1,10))
 	plt.ylabel(axis_labels[1])
 	plt.xlabel(axis_labels[0])
 	plt.title(header)
