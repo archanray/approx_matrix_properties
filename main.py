@@ -28,7 +28,7 @@ def stat_computer(A, p1=20, p2=80):
 	means = np.mean(A, axis=1)
 	percentile1 = np.percentile(A, p1, axis=1)
 	percentile2 = np.percentile(A, p2, axis=1)
-	return means, percentile1, percentile2
+	return np.log(means), np.log(percentile1), np.log(percentile2)
 
 def plot(vals, labels, x_axis, dataset_name):
 	#plot_labels = labels[0:len(vals)]
@@ -39,7 +39,7 @@ def plot(vals, labels, x_axis, dataset_name):
 	plt.gcf().clear()
 	plt.plot(x_axis, vals[0], alpha=1.0)
 	plt.fill_between(x_axis, vals[1], vals[2], alpha=0.2)
-	plt.ylim((-1,10))
+	#plt.ylim((-1,10))
 	plt.ylabel(axis_labels[1])
 	plt.xlabel(axis_labels[0])
 	plt.title(header)
@@ -74,7 +74,7 @@ approx_sym_conds = multiple_trials(symmetric, max_size, steps, trials)
 stats_PSD = stat_computer(approx_PSD_conds - PSD_cond_num, percentiles[0], percentiles[1])
 stats_sym = stat_computer(approx_sym_conds - symmetric_cond_num, percentiles[0], percentiles[1])
 
-x_axis = list(range(10, max_size, steps))
+x_axis = np.log(list(range(10, max_size, steps)))
 
 label1 = copy(labels)
 label2 = copy(labels)
