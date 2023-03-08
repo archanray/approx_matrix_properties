@@ -28,7 +28,7 @@ def stat_computer(A, p1=20, p2=80):
 	means = np.mean(A, axis=1)
 	percentile1 = np.percentile(A, p1, axis=1)
 	percentile2 = np.percentile(A, p2, axis=1)
-	return np.log(means), np.log(percentile1), np.log(percentile2)
+	return means, percentile1, percentile2
 
 def plot(vals, labels, x_axis, dataset_name):
 	#plot_labels = labels[0:len(vals)]
@@ -52,13 +52,14 @@ def plot(vals, labels, x_axis, dataset_name):
 
 A = np.random.random((500, 380))
 PSD = A@A.T
-PSD = PSD / max(PSD)
+PSD = PSD / PSD.max()
 
 A = np.random.random((500,500))
 symmetric = (A + A.T) / 2
 
 PSD_cond_num = cond(PSD)
 symmetric_cond_num = cond(symmetric)
+print(PSD_cond_num, symmetric_cond_num)
 
 max_size = 500
 steps = 10
