@@ -6,8 +6,9 @@ from copy import copy
 import os
 
 def approx_cond(A, s, indices):
-	sample_indices = np.sort(np.random.choice(indices, s, replace=True))
-	AS = len(indices) * A[sample_indices][:, sample_indices] / s
+	sample_indices = np.sort(np.random.choice(indices, s, replace=False))
+	#print(s, sample_indices)
+	AS = A[sample_indices][:, sample_indices]
 	cond_num = cond(AS)
 	return cond_num
 
@@ -21,6 +22,7 @@ def multiple_trials(A, max_size, steps, trials=50):
 		interim_vec = []
 		for j in range(trials):
 			interim_vec.append(approx_cond(A, s, indices))
+		print(s, interim_vec)
 		vals[i,:] = np.array(interim_vec)
 	return vals
 
@@ -33,7 +35,7 @@ def stat_computer(A, do_std=False, p1=20, p2=80):
 	else:
 		percentile1 = np.percentile(A, p1, axis=1)
 		percentile2 = np.percentile(A, p2, axis=1)
-
+	print(means)
 	return np.log(means), np.log(percentile1), np.log(percentile2)
 
 def plot(vals, labels, x_axis, dataset_name):
@@ -57,39 +59,43 @@ def plot(vals, labels, x_axis, dataset_name):
 	plt.savefig(filename)
 	
 
-A = np.random.random((500, 380))
-PSD = A@A.T
+Q = np.random.random((100, 80))
+PSD = Q@Q.T
 PSD = PSD / PSD.max()
 
-A = np.random.random((500,500))
-symmetric = (A + A.T) / 2
+Q = np.random.random((100,100))
+symmetric = (Q + Q.T) / 2
 
 PSD_cond_num = cond(PSD)
 symmetric_cond_num = cond(symmetric)
-print(PSD_cond_num, symmetric_cond_num)
+print("baseline condition numbers:", PSD_cond_num, symmetric_cond_num)
 
-max_size = 500
+max_size = 100+10
 steps = 10
-trials = 10
+trials = 20
 percentiles = [20,80]
 labels = ["log sampling rate", "log of errors", "Approximate condition number"]
 
 approx_PSD_conds = multiple_trials(PSD, max_size, steps, trials)
-approx_sym_conds = multiple_trials(symmetric, max_size, steps, trials)
+#approx_sym_conds = multiple_trials(symmetric, max_size, steps, trials)
 
 error_PSD = approx_PSD_conds - PSD_cond_num
-error_sym = approx_sym_conds - symmetric_cond_num
+#error_sym = approx_sym_conds - symmetric_cond_num
+
+print(error_PSD.shape)
+#print(error_sym.shape)
+
 stats_PSD = stat_computer(error_PSD, True, percentiles[0], percentiles[1])
-stats_sym = stat_computer(error_sym, True, percentiles[0], percentiles[1])
+#stats_sym = stat_computer(error_sym, True, percentiles[0], percentiles[1])
 
 x_axis = np.log(list(range(10, max_size, steps)))
+print("sample sizes:", list(range(10, max_size, steps)))
 
 label1 = copy(labels)
 label2 = copy(labels)
-
+"""
 label1.append("PSD_approx_cond_num.pdf")
 plot(stats_PSD, label1, x_axis, "random")
 label2.append("sym_approx_cond_num.pdf")
 plot(stats_sym, label2, x_axis, "random")
-
-
+"""
